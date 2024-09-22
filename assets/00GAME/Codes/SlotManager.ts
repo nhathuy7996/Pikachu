@@ -53,7 +53,7 @@ export class SlotManager extends HuynnLib.Singleton<SlotManager> {
 
         let posCam = new Vec3(this.width/2 - 0.5, this.height/2,0);
         this.cam.node.setPosition(posCam);
-
+        this.adjustCameraOrthoHeight();
         this.calculateIDs();
        
     }
@@ -318,6 +318,22 @@ export class SlotManager extends HuynnLib.Singleton<SlotManager> {
             this.currentSelect[1].reseSelect();
             this.currentSelect[1] = null;
         }
+    }
+
+    adjustCameraOrthoHeight() {
+       
+        let objectSize = new Vec3(this.width/2 + 1,0);
+       
+
+       
+        const frameSize = view.getFrameSize();
+        const aspectRatio = frameSize.width / frameSize.height;
+
+       
+        const orthoHeight = objectSize.x / aspectRatio;
+
+       
+        this.cam.orthoHeight = orthoHeight;
     }
 }
 

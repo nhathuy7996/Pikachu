@@ -10,26 +10,26 @@ export class RaycastClickHandler extends Component {
     cam: Camera = null;  // Camera chính để thực hiện raycast
 
     onEnable() {
-        // Đăng ký sự kiện chuột khi component được kích hoạt
-        input.on(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
+        
+        input.on(Input.EventType.TOUCH_START, this.onMouseDown, this);
     }
 
     onDisable() {
-        // Gỡ bỏ sự kiện khi component bị vô hiệu hóa
-        input.off(Input.EventType.MOUSE_DOWN, this.onMouseDown, this);
+        
+        input.off(Input.EventType.TOUCH_END, this.onMouseDown, this);
     } 
 
-    onMouseDown(event: EventMouse) {
+    onMouseDown(event: EventTouch) {
         const mousePos = event.getLocation();   
         this.checkRaycast(mousePos);
     }
  
 
     checkRaycast(mousePos: Vec2) {
-        // Chuyển đổi vị trí chuột thành không gian thế giới
+       
         const worldPos = this.cam.screenToWorld(new Vec3(mousePos.x, mousePos.y));
     
-        // Kiểm tra va chạm tại vị trí worldPos
+        
         const collider = PhysicsSystem2D.instance.testPoint(new Vec2(worldPos.x,worldPos.y));
     
         if (collider.length > 0) {
