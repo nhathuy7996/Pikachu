@@ -1,3 +1,13 @@
 {
-  "__version__": "1.3.8"
+  "__version__": "1.3.8",
+  "splash-setting": {
+    "background": {
+      "image": "project://settings/46.png",
+      "type": "default"
+    },
+    "logo": {
+      "type": "none"
+    },
+    "totalTime": 500
+  }
 }

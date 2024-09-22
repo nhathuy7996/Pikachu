@@ -18,14 +18,26 @@ export class SlotManager extends HuynnLib.Singleton<SlotManager> {
     @property(SlotHandle) public currentSelect: SlotHandle[] = [null,null];
     @property(Number) currentIDs: Number[] = [];
     @property(Graphics) graphics: Graphics;
+    @property(Node) loading: Node;
 
-    start() {
+    isLoadedResource = false;
+    isSetupSlotsDone = false;
+
+    protected onLoad(): void {
         SlotManager.instance = this;
+        this.loading.active = true;
+        resources.loadDir("Images/pokemons/phase1", SpriteFrame, this.onResourcesLoadDone.bind(this));
         this.Init();
     }
 
+
     Init(){
-        resources.loadDir("Images/pokemons/phase1", SpriteFrame, this.onResourcesLoadDone.bind(this));
+        this.isSetupSlotsDone = false;
+        if(this.isLoadedResource === false) {
+            window.setTimeout(this.Init.bind(this), 100); 
+            return;
+         }  
+         this.SpawSlots();
     }
  
     onResourcesLoadDone(err, spriteFrames){
@@ -36,7 +48,7 @@ export class SlotManager extends HuynnLib.Singleton<SlotManager> {
 
         this.images = spriteFrames; 
         console.log(`loaded totall ${this.images.length} images`);
-        this.SpawSlots();
+        this.isLoadedResource = true;
     }
 
     SpawSlots(){
@@ -50,9 +62,7 @@ export class SlotManager extends HuynnLib.Singleton<SlotManager> {
  
             this.slots.push(col); 
         }
-
-        let posCam = new Vec3(this.width/2 - 0.5, this.height/2,0);
-        this.cam.node.setPosition(posCam);
+ 
         this.adjustCameraOrthoHeight();
         this.calculateIDs();
        
@@ -72,6 +82,8 @@ export class SlotManager extends HuynnLib.Singleton<SlotManager> {
             let firstSlot = this.attachIDs(imageRanIndex);
             this.attachIDs(imageRanIndex,i < maxCapacity?firstSlot:null);
         }
+        this.isSetupSlotsDone = true;
+        this.loading.active = false;
     }
 
     attachIDs(imageRanIndex,pos = null){
@@ -322,18 +334,20 @@ export class SlotManager extends HuynnLib.Singleton<SlotManager> {
 
     adjustCameraOrthoHeight() {
        
-        let objectSize = new Vec3(this.width/2 + 1,0);
-       
-
+        let objectSize = new Vec3(this.width/2 + 1,0); 
        
         const frameSize = view.getFrameSize();
         const aspectRatio = frameSize.width / frameSize.height;
 
        
         const orthoHeight = objectSize.x / aspectRatio;
-
-       
         this.cam.orthoHeight = orthoHeight;
+
+        let diffY = math.clamp((orthoHeight - this.height),0,orthoHeight);
+         
+
+        let posCam = new Vec3(this.width/2 - 0.5, this.height+diffY - 1.5,0);
+        this.cam.node.setPosition(posCam);
     }
 }
 
